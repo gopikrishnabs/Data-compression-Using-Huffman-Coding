@@ -1,0 +1,336 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#include<string.h>
+
+
+
+#define MAXHEIGHT 100 
+  
+struct structure
+{ 
+  
+
+    char alpha; 
+  
+   
+    int  frequency; 
+  
+  
+    struct structure *lside , *rside ; 
+}; 
+  
+struct heapstructure 
+{ 
+  
+ 
+    int total; 
+  
+ 
+    int volume; 
+  
+    
+    struct structure** array; 
+}; 
+  
+ void swapnode(struct structure** ,struct structure** );
+ void heapifing(struct heapstructure* ,int  );
+ int  isOne(struct heapstructure* );
+ void insertingHeap(struct heapstructure* ,struct structure*);
+ void buildingHeap(struct heapstructure* );
+ void printheap(struct structure* ,int [],int );
+ int  checkingleafornot(struct structure* );
+ void Arr(int [],int );
+ void Codes(char [],int [],int );
+ 
+
+struct structure* newstructure(char alpha, int frequency) 
+{ 
+struct structure* t = (struct structure*)malloc(sizeof(struct structure)); 
+  
+    t->lside  = t->rside  = NULL; 
+    t->alpha = alpha; 
+    t->frequency = frequency; 
+  printf("the entered node is %c and its frequency is %d\n",t->alpha,t->frequency);
+    return t; 
+} 
+  
+struct heapstructure* createHeapthing(int volume) 
+  
+{ 
+  
+    struct heapstructure* Heap = (struct heapstructure*)malloc(sizeof(struct heapstructure)); 
+  
+  
+    Heap->total = 0; 
+  
+    Heap->volume = volume; 
+  
+    Heap->array=(struct structure**)malloc(Heap->volume*sizeof(struct structure*)); 
+    return Heap; 
+} 
+ 
+
+
+ struct heapstructure* createAndBuildHeap(char alpha[], int frequency[], int total) 
+  
+{  int i=0;
+  
+    struct heapstructure* Heap = createHeapthing(total); 
+  
+      
+      while(i<total)
+      {
+        Heap->array[i] = newstructure(alpha[i], frequency[i]); 
+        i++;
+      } 
+    Heap->total = total; 
+    buildingHeap(Heap); 
+  
+    return Heap; 
+} 
+
+void swaping(struct structure** a,struct structure** b) 
+  
+{ 
+  
+    struct structure* t = *a; 
+    *a = *b; 
+    *b = t; 
+} 
+  
+
+void Heapifing(struct heapstructure* Heap, int index) 
+{ 
+  
+    int lowest = index; 
+    int lside  = 2 * index + 1; 
+    int rside  = 2 * index + 2; 
+  
+if(lside < Heap->total && Heap->array[lside]->frequency < Heap->array[lowest]->frequency) 
+        lowest = lside; 
+  
+if(rside < Heap->total && Heap->array[rside]->frequency < Heap->array[lowest]->frequency) 
+        lowest = rside; 
+  
+    if (lowest != index) 
+    { 
+        swaping(&Heap->array[lowest], 
+                        &Heap->array[index]); 
+        Heapifing(Heap, lowest); 
+    } 
+} 
+ 
+ 
+struct structure* extraction(struct heapstructure* Heap) 
+  
+{ 
+  
+    struct structure* t = Heap->array[0]; 
+    Heap->array[0] = Heap->array[Heap->total - 1]; 
+  printf("min ele is acc to frequency:%c\n",t->alpha);
+    --Heap->total; 
+    Heapifing(Heap, 0); 
+  
+    return t; 
+}  
+   
+
+struct structure* Tree(char alpha[], int frequency[], int total) 
+  
+{ 
+    struct structure *lside , *rside, *top; 
+  
+
+  
+   struct heapstructure* Heap = createAndBuildHeap(alpha, frequency, total); 
+  
+    
+    while (!isOne(Heap)) 
+    { 
+  
+        
+        lside  = extraction(Heap); 
+        rside  = extraction(Heap); 
+  
+
+        top = newstructure('$', lside->frequency + rside ->frequency); 
+  
+        top->lside = lside ; 
+        top->rside = rside ; 
+  
+        insertingHeap(Heap, top); 
+    } 
+  
+
+    return extraction(Heap); 
+} 
+int main() 
+{
+
+  int count[256] = { 0 };
+  char arr[256] ;
+  int freq[256] ;
+  
+ int k=0,ch=0,size,c,i=0,q=0,r,w=0,l,f=0;
+FILE *fp = fopen("mini.txt", "r");
+  
+  while(c=getc(fp))
+  {
+   if(c==EOF) break;
+  else
+  {
+    if(i==0)
+    { 
+    arr[i]=c; 
+    
+    }   
+  for(k=0;k<i;k++)
+   { 
+	  if(arr[k]==c)
+     { i--; f=1; arr[k]=c; 
+    
+     } 
+   }
+ if(k>=0&&f!=1) 
+ { 
+ arr[i]=c; 
+ 
+ }
+   i++;
+    f=0;  
+ count[c]+=1; 
+ 
+  } 
+
+
+  }
+ printf("i=%d\n",i);
+  size=i;
+
+    for(ch=0; ch<256; ch++) 
+  {
+    if(count[ch] > 0) 
+    {
+      printf("char %c: %d times\n", ch, count[ch]);
+     
+    } 
+  }
+  /* close the file */
+  fclose(fp);
+  
+ for(w=0;w<i;w++)
+{   c=arr[w];
+    freq[q]=count[c];
+    q++;	
+	printf("the freq of %c is %d\n",c,count[c]); 
+}
+   
+   for(w=0;w<i;w++)
+  printf("arr ele  %c is at pos %d\n",arr[w],w);
+  
+  Codes(arr,freq,size);
+
+  return 0;
+  
+}   
+
+
+ 
+
+int isOne(struct heapstructure* Heap) 
+{ 
+  
+    return (Heap->total == 1); 
+} 
+  
+
+  
+
+void insertingHeap(struct heapstructure* Heap, struct structure*  node) 
+  
+{ 
+   
+    ++Heap->total;
+    int i = Heap->total - 1; 
+  
+    while (i && node->frequency < Heap->array[(i - 1) / 2]->frequency) 
+    { 
+  
+        Heap->array[i] = Heap->array[(i - 1) / 2]; 
+        i = (i - 1) / 2;
+    }
+    Heap->array[i] = node; 
+} 
+  
+
+void buildingHeap(struct heapstructure* Heap) 
+  
+{ 
+  
+    int n = Heap->total - 1; 
+    int i; 
+  
+    for (i=(n - 1)/2;i>= 0;--i) 
+        Heapifing(Heap, i); 
+} 
+  
+
+void Arr(int array[], int n) 
+{ 
+    int i=0; 
+    while(i<n)
+    {
+        printf("%d", array[i]); 
+          i++;
+    }
+printf("\n"); 
+} 
+  
+
+int checkingleafornot(struct structure* root) 
+  
+{ 
+  
+    return !(root->lside ) && !(root->rside); 
+} 
+  
+
+void printheap(struct structure* root, int array[], int top) 
+  
+{ 
+  
+    if (root->lside ) 
+    { 
+        array[top] = 0; 
+        printheap(root->lside , array, top + 1); 
+    } 
+  
+
+    if (root->rside) { 
+  
+        array[top] = 1; 
+        printheap(root->rside , array, top + 1); 
+    } 
+  
+
+    if (checkingleafornot(root)) { 
+  
+        printf("the huffman coding for %c is : ", root->alpha); 
+        Arr(array, top); 
+    } 
+} 
+  
+
+ 
+void Codes(char alpha[], int frequency[], int total) 
+  
+{ 
+
+    struct structure* root = Tree(alpha, frequency, total); 
+  
+
+    int array[MAXHEIGHT], top = 0; 
+  
+    printheap(root, array, top); 
+} 
+  
